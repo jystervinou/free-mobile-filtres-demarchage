@@ -1,18 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bookmarklet Installation</title>
+  <title>Bookmarklet pour Bloquer les Appels</title>
 </head>
 <body>
-  <h1>Bookmarklet Installation Instructions</h1>
-  <p>To install the filter rule bookmarklet, follow these steps:</p>
+  <h1>Bookmarklet pour Bloquer les Appels</h1>
+  <p>Ce bookmarklet ajoute des règles qui bloquent les appels entrants à partir de numéros commençant par ces préfixes officiels.</p>
+  <p>Ceci est spécifique à Free Mobile.</p>
+  <p>Pour utiliser le bookmarklet, suivez ces étapes :</p>
   <ol>
-    <li>Drag the link below and drop it into your browser's bookmark bar.</li>
-    <li>Give it a name (e.g., Set Filter Rules).</li>
-    <li>Once you have added the bookmarklet, go to the website with the filter rules and click on the bookmark to start setting the rules one by one.</li>
+    <li>Installez le bookmarklet :</li>
+    <ul>
+      <li>Glissez-déposez le lien ci-dessous dans la barre de favoris de votre navigateur.</li>
+      <li>Donnez-lui un nom (par exemple, Bloquer les Appels).</li>
+    </ul>
+    <li>Connectez-vous sur <a href="https://mobile.free.fr" target="_blank">https://mobile.free.fr</a>, puis accédez à <a href="https://mobile.free.fr/account/mes-services/filtres" target="_blank">https://mobile.free.fr/account/mes-services/filtres</a>.</li>
+    <li>Cliquez sur le bookmarklet que vous avez installé.</li>
+    <li>Rechargez la page après quelques secondes.</li>
   </ol>
-  <a href="javascript:(function(){var e=['0162','0163','0270','0271','0377','0378','0424','0425','0568','0569','0948','0949'],t='/account/mes-services/filtres?action=save';function n(e){console.log('Setting filter rule:',e);var o=new XMLHttpRequest;o.onreadystatechange=function(){if(4===o.readyState){if(o.status>=200&&o.status<300)console.log('Successfully set filter rule:',e);else console.error('Failed to set filter rule:',e);r();}},o.open('POST',t,!0),o.setRequestHeader('Content-type','application/x-www-form-urlencoded'),o.send('rule-id=&direction=2&pattern='+encodeURIComponent(e)+'&description=Démarchage&full-day=1&full-week=1&media=1&action=2');}function r(){if(e.length>0){var t=e.shift();var l=document.querySelectorAll('.f-rules__item--msisdn');if(!Array.from(l).some(function(e){return e.innerHTML.includes(t)}))n(t);else(console.log('Filter rule already present:',t),r())}else console.log('All filter rules have been processed.');}r();})();" title="Set Filter Rules">Set Filter Rules</a>
+  <a href="javascript:(function(){var e=['0162','0163','0270','0271','0377','0378','0424','0425','0568','0569','0948','0949'],t='/account/mes-services/filtres?action=save';function n(e){console.log('Setting filter rule:',e);var o=new XMLHttpRequest;o.onreadystatechange=function(){if(4===o.readyState){if(o.status>=200&&o.status<300)console.log('Successfully set filter rule:',e);else console.error('Failed to set filter rule:',e);r();}},o.open('POST',t,!0),o.setRequestHeader('Content-type','application/x-www-form-urlencoded'),o.send('rule-id=&direction=2&pattern='+encodeURIComponent(e)+'&description=Démarchage&full-day=1&full-week=1&media=1&action=2');}function r(){if(e.length>0){var t=e.shift();var l=document.querySelectorAll('.f-rules__item--msisdn');if(!Array.from(l).some(function(e){return e.innerHTML.includes(t)}))n(t);else(console.log('Filter rule already present:',t),r())}else console.log('All filter rules have been processed.');}r();})();">Bloquer les Appels</a>
 </body>
 </html>
