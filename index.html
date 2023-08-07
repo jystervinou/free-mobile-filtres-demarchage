@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bookmarklet Installation</title>
+</head>
+<body>
+  <h1>Bookmarklet Installation Instructions</h1>
+  <p>To install the filter rule bookmarklet, follow these steps:</p>
+  <ol>
+    <li>Drag the link below and drop it into your browser's bookmark bar.</li>
+    <li>Give it a name (e.g., Set Filter Rules).</li>
+    <li>Once you have added the bookmarklet, go to the website with the filter rules and click on the bookmark to start setting the rules one by one.</li>
+  </ol>
+  <a href="javascript:(function(){var e=['0162','0163','0270','0271','0377','0378','0424','0425','0568','0569','0948','0949'],t='/account/mes-services/filtres?action=save';function n(e){console.log('Setting filter rule:',e);var o=new XMLHttpRequest;o.onreadystatechange=function(){if(4===o.readyState){if(o.status>=200&&o.status<300)console.log('Successfully set filter rule:',e);else console.error('Failed to set filter rule:',e);r();}},o.open('POST',t,!0),o.setRequestHeader('Content-type','application/x-www-form-urlencoded'),o.send('rule-id=&direction=2&pattern='+encodeURIComponent(e)+'&description=Démarchage&full-day=1&full-week=1&media=1&action=2');}function r(){if(e.length>0){var t=e.shift();var l=document.querySelectorAll('.f-rules__item--msisdn');if(!Array.from(l).some(function(e){return e.innerHTML.includes(t)}))n(t);else(console.log('Filter rule already present:',t),r())}else console.log('All filter rules have been processed.');}r();})();" title="Set Filter Rules">Set Filter Rules</a>
+</body>
+</html>
