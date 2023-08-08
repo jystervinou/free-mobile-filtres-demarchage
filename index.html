@@ -53,7 +53,7 @@
   
   <p><a class="large-link" href="javascript:(function(){var e=['0162*','0163*','0270*','0271*','0377*','0378*','0424*','0425*','0568*','0569*','0948*','0949*','09475*','09476*','09477*','09478*','09479*'],t='/account/mes-services/filtres?action=save';function n(e){console.log('Setting filter rule:',e);var o=new XMLHttpRequest;o.onreadystatechange=function(){if(4===o.readyState){if(o.status>=200&&o.status<300)console.log('Successfully set filter rule:',e);else console.error('Failed to set filter rule:',e);r();}},o.open('POST',t,!0),o.setRequestHeader('Content-type','application/x-www-form-urlencoded'),o.send('rule-id=&direction=2&pattern='+encodeURIComponent(e)+'&description=Démarchage&full-day=1&full-week=1&media=1&action=2');}function r(){if(e.length>0){var t=e.shift();var l=document.querySelectorAll('.f-rules__item--msisdn');if(!Array.from(l).some(function(e){return e.innerHTML.includes(t)}))n(t);else(console.log('Filter rule already present:',t),r())}else console.log('All filter rules have been processed.');}r();})();">Bloquer les Appels</a></p>
 
-  <p>Sur iOS vous pouvez aussi créer un bookmark, puis modifier l'URL du bookmark et coller le javascript du bookmarklet : <button id="copyButton">Copier le Bookmarklet dans le press-papier</button></p>
+  <p>Sur iOS vous pouvez aussi créer un bookmark, puis modifier l'URL du bookmark et coller le javascript du bookmarklet à la place : <button id="copyButton">Copier le Bookmarklet dans le presse-papier</button></p>
   <!-- Image -->
   <img src="https://jystervinou.github.io/free-mobile-filtres-demarchage/regles-prefixe-demarchages.png" alt="Exemple des préfixes de démarchage" style="max-width: 100%;">
 
