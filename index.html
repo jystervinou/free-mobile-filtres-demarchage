@@ -21,6 +21,11 @@
     <li>0569</li>
     <li>0948</li>
     <li>0949</li>
+    <li>09475</li>
+    <li>09476</li>
+    <li>09477</li>
+    <li>09478</li>
+    <li>09479</li>
   </ul>
   <p>Ceci est spécifique à Free Mobile.</p>
   <p>Pour utiliser le bookmarklet, suivez ces étapes :</p>
@@ -37,7 +42,7 @@
     <li>Attendez quelques secondes puis rechargez la page des filtres.</li>
   </ol>
   <p><strong>Remarque importante :</strong> Ce bookmarklet est fourni "en l'état" sans aucune garantie. L'auteur n'est en rien responsable de l'utilisation qui en est faite. Utilisez-le à votre propre discrétion.</p>
-  <a href="javascript:(function(){var e=['0162*','0163*','0270*','0271*','0377*','0378*','0424*','0425*','0568*','0569*','0948*','0949*'],t='/account/mes-services/filtres?action=save';function n(e){console.log('Setting filter rule:',e);var o=new XMLHttpRequest;o.onreadystatechange=function(){if(4===o.readyState){if(o.status>=200&&o.status<300)console.log('Successfully set filter rule:',e);else console.error('Failed to set filter rule:',e);r();}},o.open('POST',t,!0),o.setRequestHeader('Content-type','application/x-www-form-urlencoded'),o.send('rule-id=&direction=2&pattern='+encodeURIComponent(e)+'&description=Démarchage&full-day=1&full-week=1&media=1&action=2');}function r(){if(e.length>0){var t=e.shift();var l=document.querySelectorAll('.f-rules__item--msisdn');if(!Array.from(l).some(function(e){return e.innerHTML.includes(t)}))n(t);else(console.log('Filter rule already present:',t),r())}else console.log('All filter rules have been processed.');}r();})();">Bloquer les Appels</a>
+  <a href="javascript:(function(){var e=['0162*','0163*','0270*','0271*','0377*','0378*','0424*','0425*','0568*','0569*','0948*','0949*','09475*','09476*','09477*','09478*','09479*'],t='/account/mes-services/filtres?action=save';function n(e){console.log('Setting filter rule:',e);var o=new XMLHttpRequest;o.onreadystatechange=function(){if(4===o.readyState){if(o.status>=200&&o.status<300)console.log('Successfully set filter rule:',e);else console.error('Failed to set filter rule:',e);r();}},o.open('POST',t,!0),o.setRequestHeader('Content-type','application/x-www-form-urlencoded'),o.send('rule-id=&direction=2&pattern='+encodeURIComponent(e)+'&description=Démarchage&full-day=1&full-week=1&media=1&action=2');}function r(){if(e.length>0){var t=e.shift();var l=document.querySelectorAll('.f-rules__item--msisdn');if(!Array.from(l).some(function(e){return e.innerHTML.includes(t)}))n(t);else(console.log('Filter rule already present:',t),r())}else console.log('All filter rules have been processed.');}r();})();">Bloquer les Appels</a>
 
   <!-- Image -->
   <img src="https://jystervinou.github.io/free-mobile-filtres-demarchage/regles-prefixe-demarchages.png" alt="Exemple des préfixes de démarchage" style="max-width: 100%;">
