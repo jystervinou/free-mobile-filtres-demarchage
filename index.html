@@ -57,6 +57,8 @@
   <!-- Image -->
   <img src="https://jystervinou.github.io/free-mobile-filtres-demarchage/regles-prefixe-demarchages.png" alt="Exemple des préfixes de démarchage" style="max-width: 100%;">
 
+  <p>Contactez-moi sur <a href="https://twitter.com/jy">Twitter/X</a>.</p>
+  
   <script>
         const bookmarkletCode = `javascript:(function(){var%20e=['0162*','0163*','0270*','0271*','0377*','0378*','0424*','0425*','0568*','0569*','0948*','0949*'],t='/account/mes-services/filtres?action=save';function%20n(e){console.log('Setting%20filter%20rule:',e);var%20o=new%20XMLHttpRequest;o.onreadystatechange=function(){if(4===o.readyState){if(o.status%3E=200&&o.status%3C300)console.log('Successfully%20set%20filter%20rule:',e);else%20console.error('Failed%20to%20set%20filter%20rule:',e);r();}},o.open('POST',t,!0),o.setRequestHeader('Content-type','application/x-www-form-urlencoded'),o.send('rule-id=&direction=2&pattern='+encodeURIComponent(e)+'&description=Démarchage&full-day=1&full-week=1&media=1&action=2');}function%20r(){if(e.length%3E0){var%20t=e.shift();var%20l=document.querySelectorAll('.f-rules__item--msisdn');if(!Array.from(l).some(function(e){return%20e.innerHTML.includes(t)}))n(t);else(console.log('Filter%20rule%20already%20present:',t),r())}else%20console.log('All%20filter%20rules%20have%20been%20processed.');}r();})();`;
 
