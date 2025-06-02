@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>DTMF Tone Generator</title>
+</head>
+<body>
+  <h1>DTMF Tone Generator</h1>
+  <button id="playButton">Play DTMF Tones</button>
+  <div id="sequenceDisplay"></div>
+
+  <script>
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const dtmfFrequencies = {
+      '1': [697, 1209], '2': [697, 1336], '3': [697, 1477],
+      '4': [770, 1209], '5': [770, 1336], '6': [770, 1477],
+      '7': [852, 1209], '8': [852, 1336], '9': [852, 1477],
+      '*': [941, 1209], '0': [941, 1336], '#': [941, 1477],
+      'A': [697, 1633], 'B': [770, 1633], 'C': [852, 1633], 'D': [941, 1633]
+    };
+    const toneDuration = 0.5;
+    const pauseBetweenSounds = 0.1;
+    const pauseBetweenPrefixes = 2;
+
+    let silenceBuffer, gainNode;
+
+    async function initializeAudioContext() {
+      silenceBuffer = audioContext.createBuffer(1, audioContext.sampleRate / 10, audioContext.sampleRate);
+      const channelData = silenceBuffer.getChannelData(0);
+      for (let i = 0; i < channelData.length; i++) {
+        channelData[i] = 0;
+      }
+
+      gainNode = audioContext.createGain();
+      gainNode.connect(audioContext.destination);
+      await audioContext.resume();
+    }
+
+    async function playSilence(duration) {
+      const bufferSource = audioContext.createBufferSource();
+      bufferSource.buffer = silenceBuffer;
+      bufferSource.connect(gainNode);
+      bufferSource.start();
+      await new Promise(resolve => setTimeout(resolve, duration * 1000));
+      bufferSource.disconnect();
+    }
+
+    async function playDTMFTone(frequency1, frequency2, duration, char) {
+      const oscillator1 = audioContext.createOscillator();
+      const oscillator2 = audioContext.createOscillator();
+
+      oscillator1.type = 'sine';
+      oscillator2.type = 'sine';
+
+      oscillator1.frequency.setValueAtTime(frequency1, audioContext.currentTime);
+      oscillator2.frequency.setValueAtTime(frequency2, audioContext.currentTime);
+
+      oscillator1.connect(gainNode);
+      oscillator2.connect(gainNode);
+
+      oscillator1.start();
+      oscillator2.start();
+
+      document.getElementById('sequenceDisplay').textContent += char;
+
+      await new Promise(resolve => setTimeout(resolve, duration * 1000));
+
+      oscillator1.stop();
+      oscillator2.stop();
+    }
+
+    async function playDTMFSequence(sequence) {
+      for (const char of sequence) {
+        if (char in dtmfFrequencies) {
+          const [frequency1, frequency2] = dtmfFrequencies[char];
+          await playDTMFTone(frequency1, frequency2, toneDuration, char);
+          await playSilence(pauseBetweenSounds);
+        }
+      }
+    }
+
+    async function callSequenceWithPrefix(prefix) {
+      const sequence = `*351*${prefix}#`;
+      await playDTMFSequence(sequence);
+    }
+
+    async function pause(seconds) {
+      document.getElementById('sequenceDisplay').textContent += '\n';
+      await new Promise(resolve => setTimeout(resolve, seconds * 1000));
+    }
+
+    document.getElementById('playButton').addEventListener('click', async () => {
+      await initializeAudioContext();
+
+      const prefixes = [
+        "0162", "0163", "0270", "0271", "0377",
+        "0378", "0424", "0425", "0568", "0569",
+        "0948", "0949", "09475", "09476", "09477",
+        "09478", "09479"
+      ];
+
+      for (const [index, prefix] of prefixes.entries()) {
+        if (index !== 0) {
+          await pause(pauseBetweenPrefixes);
+        }
+        await callSequenceWithPrefix(prefix);
+      }
+    });
+  </script>
+</body>
+</html>
