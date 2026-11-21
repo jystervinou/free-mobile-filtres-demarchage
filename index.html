@@ -5,80 +5,184 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bookmarklet pour Bloquer les Appels de démarchage sur une ligne Free Mobile</title>
   <style>
-    .large-link {
-        font-size: 24px;
-        font-weight: bold;
-        color: blue;
-        /* Add more styles as needed */
+    :root {
+      --bg: #f6f6f4;
+      --card: #ffffff;
+      --text: #1d1d1f;
+      --muted: #5f6368;
+      --border: #e3e3df;
+      --accent: #cd1e25;
+      --accent-text: #ffffff;
+      --chip: #f1f1ee;
+      --link: #b3141b;
     }
-</style>
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #161618;
+        --card: #1f1f22;
+        --text: #ececec;
+        --muted: #a1a1a6;
+        --border: #333338;
+        --chip: #2a2a2e;
+        --link: #ff6b70;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+    main { max-width: 760px; margin: 0 auto; padding: 40px 16px 64px; }
+    h1 { font-size: clamp(1.6rem, 4vw, 2.2rem); line-height: 1.2; margin: 0 0 12px; }
+    h2 { font-size: 1.25rem; margin: 0 0 12px; }
+    a { color: var(--link); }
+    .lead { color: var(--muted); font-size: 1.05rem; margin: 0 0 28px; }
+    section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+    .prefixes { list-style: none; padding: 0; margin: 12px 0; display: flex; flex-wrap: wrap; gap: 8px; }
+    .prefixes li {
+      background: var(--chip);
+      border-radius: 999px;
+      padding: 2px 12px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 0.95rem;
+    }
+    .note { color: var(--muted); font-size: 0.95rem; margin-bottom: 0; }
+    .install { text-align: center; }
+    .large-link {
+      display: inline-block;
+      background: var(--accent);
+      color: var(--accent-text);
+      text-decoration: none;
+      font-size: 1.3rem;
+      font-weight: 700;
+      padding: 14px 28px;
+      border-radius: 12px;
+      cursor: grab;
+      box-shadow: 0 2px 8px rgba(205, 30, 37, 0.3);
+    }
+    .large-link:active { cursor: grabbing; }
+    .hint { color: var(--muted); margin: 12px 0 0; }
+    ol { padding-left: 1.3em; margin: 0; }
+    ol li { margin-bottom: 8px; }
+    ol ul { margin: 6px 0 0; padding-left: 1.2em; }
+    button {
+      font: inherit;
+      font-size: 0.95rem;
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--chip);
+      color: var(--text);
+      cursor: pointer;
+    }
+    button:hover { border-color: var(--muted); }
+    #copyStatus { color: var(--muted); margin-left: 8px; }
+    img { max-width: 100%; height: auto; border-radius: 8px; border: 1px solid var(--border); margin-top: 12px; }
+    .disclaimer { font-size: 0.9rem; color: var(--muted); }
+    footer { text-align: center; color: var(--muted); font-size: 0.95rem; }
+  </style>
 </head>
 <body>
-  <h1>Bookmarklet pour Bloquer les Appels de démarchage sur une ligne Free Mobile</h1>
-  <p>Ce bookmarklet ajoute des règles qui bloquent les appels entrants à partir de numéros commençant par ces préfixes officiels :</p>
-  <ul>
-    <li>0162</li>
-    <li>0163</li>
-    <li>0270</li>
-    <li>0271</li>
-    <li>0377</li>
-    <li>0378</li>
-    <li>0424</li>
-    <li>0425</li>
-    <li>0568</li>
-    <li>0569</li>
-    <li>0948</li>
-    <li>0949</li>
-    <li>09475</li>
-    <li>09476</li>
-    <li>09477</li>
-    <li>09478</li>
-    <li>09479</li>
-  </ul>
-  <p>Ceci est spécifique à Free Mobile et Free La Réunion.</p>
-  <p>Pour utiliser le bookmarklet, suivez ces étapes :</p>
-  <ol>
-    <li>Installez le bookmarklet :</li>
-    <ul>
-      <li>Glissez-déposez le lien ci-dessous dans la barre de favoris de votre navigateur.</li>
-      <li>Donnez-lui un nom (par exemple, Bloquer les Appels).</li>
+<main>
+  <h1>Bloquer les appels de démarchage sur une ligne Free Mobile</h1>
+  <p class="lead">Un bookmarklet qui ajoute en un clic, dans votre espace abonné, des règles bloquant les appels entrants des préfixes officiels réservés au démarchage.</p>
+
+  <section>
+    <h2>Préfixes bloqués</h2>
+    <ul class="prefixes">
+      <li>0162</li>
+      <li>0163</li>
+      <li>0270</li>
+      <li>0271</li>
+      <li>0377</li>
+      <li>0378</li>
+      <li>0424</li>
+      <li>0425</li>
+      <li>0568</li>
+      <li>0569</li>
+      <li>0948</li>
+      <li>0949</li>
+      <li>09475</li>
+      <li>09476</li>
+      <li>09477</li>
+      <li>09478</li>
+      <li>09479</li>
     </ul>
-    <li>Connectez-vous sur <a href="https://mobile.free.fr" target="_blank">https://mobile.free.fr</a> (ou <a href="https://mobile.free.re" target="_blank">https://mobile.free.re</a>)</li>
-    <li>Activez les "Filtres Appels &amp; SMS/MMS" sur <a href="https://mobile.free.fr/account/mes-services">la page des Services</a> si ce n'est pas déjà fait</li>
-    <li>Accédez à <a href="https://mobile.free.fr/account/mes-services/filtres" target="_blank">https://mobile.free.fr/account/mes-services/filtres</a>.</li>
-    <li>Cliquez sur le bookmarklet que vous avez installé pour ajouter tous les filtres des <a href="https://www.service-public.fr/particuliers/actualites/A15938">préfixes des numéros de démarchage officiels</a>.</li>
-    <li>Attendez quelques secondes : un message indique le nombre de filtres ajoutés, puis la page se recharge.</li>
-  </ol>
-  <p><strong>Remarque importante :</strong> Ce bookmarklet est fourni "en l'état" sans aucune garantie. L'auteur n'est en rien responsable de l'utilisation qui en est faite. Utilisez-le à votre propre discrétion.</p>
-  
-  <p><a class="large-link" href="javascript:(function(){var e=['0162*','0163*','0270*','0271*','0377*','0378*','0424*','0425*','0568*','0569*','0948*','0949*','09475*','09476*','09477*','09478*','09479*'],f=document.querySelector('form.f-rules__form'),c=0;if(!f){alert('Formulaire des filtres introuvable. Ouvrez la page https://mobile.free.fr/account/mes-services/filtres puis relancez le bookmarklet.');return;}var t=f.getAttribute('action');var x=Array.from(document.querySelectorAll('.f-rules__item--msisdn')).map(function(l){return l.textContent.trim()});function n(p){var o=new XMLHttpRequest;o.onreadystatechange=function(){if(4===o.readyState){if(o.status>=200&amp;&amp;o.status<300){c++;console.log('Filtre ajouté :',p)}else console.error('Échec pour le filtre :',p,o.status);r()}};o.open('POST',t,!0);o.setRequestHeader('Content-type','application/x-www-form-urlencoded');o.send('rule-id=&amp;direction=2&amp;pattern='+encodeURIComponent(p)+'&amp;description='+encodeURIComponent('Démarchage')+'&amp;full-day=1&amp;full-week=1&amp;media=1&amp;action=2')}function r(){if(e.length>0){var p=e.shift();if(x.indexOf(p)<0)n(p);else{console.log('Filtre déjà présent :',p);r()}}else{alert(c+' filtre(s) ajouté(s). La page va se recharger.');location.reload()}}r()})();">Bloquer les Appels</a>&nbsp;&nbsp;&nbsp;&lt;&dash;&dash;&dash;&dash;&dash; Bookmarklet</p>
+    <p class="note">Les appels de ces numéros sont renvoyés vers la messagerie. Ceci est spécifique à Free Mobile et Free La Réunion. Source : <a href="https://www.service-public.fr/particuliers/actualites/A15938">préfixes des numéros de démarchage officiels</a>.</p>
+  </section>
 
-  <p>Sur iOS vous pouvez aussi créer un bookmark, puis modifier l'URL du bookmark et coller le javascript du bookmarklet à la place : <button id="copyButton">Copier le Bookmarklet dans le presse-papier</button></p>
-  
-  <h2>Alternative : l'application Saracroche</h2>
-  <p>Si vous n'êtes pas chez Free, ou pour aller plus loin, l'application gratuite et open source <a href="https://saracroche.org/">Saracroche</a> bloque directement sur le téléphone les appels de démarchage, à partir des préfixes officiels et d'une liste de numéros signalés. Elle fonctionne quel que soit l'opérateur :</p>
-  <ul>
-    <li><a href="https://apps.apple.com/app/id6743679292">Saracroche sur l'App Store (iPhone)</a></li>
-    <li><a href="https://play.google.com/store/apps/details?id=com.cbouvat.android.saracroche">Saracroche sur Google Play (Android)</a></li>
-  </ul>
+  <section class="install">
+    <h2>Le bookmarklet</h2>
+    <a class="large-link" href="javascript:(function(){var e=['0162*','0163*','0270*','0271*','0377*','0378*','0424*','0425*','0568*','0569*','0948*','0949*','09475*','09476*','09477*','09478*','09479*'],f=document.querySelector('form.f-rules__form'),c=0;if(!f){alert('Formulaire des filtres introuvable. Ouvrez la page https://mobile.free.fr/account/mes-services/filtres puis relancez le bookmarklet.');return;}var t=f.getAttribute('action');var x=Array.from(document.querySelectorAll('.f-rules__item--msisdn')).map(function(l){return l.textContent.trim()});function n(p){var o=new XMLHttpRequest;o.onreadystatechange=function(){if(4===o.readyState){if(o.status>=200&amp;&amp;o.status<300){c++;console.log('Filtre ajouté :',p)}else console.error('Échec pour le filtre :',p,o.status);r()}};o.open('POST',t,!0);o.setRequestHeader('Content-type','application/x-www-form-urlencoded');o.send('rule-id=&amp;direction=2&amp;pattern='+encodeURIComponent(p)+'&amp;description='+encodeURIComponent('Démarchage')+'&amp;full-day=1&amp;full-week=1&amp;media=1&amp;action=2')}function r(){if(e.length>0){var p=e.shift();if(x.indexOf(p)<0)n(p);else{console.log('Filtre déjà présent :',p);r()}}else{alert(c+' filtre(s) ajouté(s). La page va se recharger.');location.reload()}}r()})();">Bloquer les Appels</a>
+    <p class="hint">Glissez-déposez ce bouton dans votre barre de favoris.</p>
+    <p class="hint">Sur iOS, créez un favori, puis remplacez son URL par le code du bookmarklet :<br>
+      <button id="copyButton">Copier le bookmarklet</button><span id="copyStatus" role="status"></span></p>
+  </section>
 
-  <p><a href="https://x.com/jy">Vous pouvez me contacter sur X</a>.</p>
+  <section>
+    <h2>Mode d'emploi</h2>
+    <ol>
+      <li>Installez le bookmarklet :
+        <ul>
+          <li>Glissez-déposez le bouton ci-dessus dans la barre de favoris de votre navigateur.</li>
+          <li>Donnez-lui un nom (par exemple, Bloquer les Appels).</li>
+        </ul>
+      </li>
+      <li>Connectez-vous sur <a href="https://mobile.free.fr" target="_blank">mobile.free.fr</a> (ou <a href="https://mobile.free.re" target="_blank">mobile.free.re</a>).</li>
+      <li>Activez les « Filtres Appels &amp; SMS/MMS » sur <a href="https://mobile.free.fr/account/mes-services">la page des Services</a> si ce n'est pas déjà fait.</li>
+      <li>Accédez à <a href="https://mobile.free.fr/account/mes-services/filtres" target="_blank">mobile.free.fr/account/mes-services/filtres</a>.</li>
+      <li>Cliquez sur le bookmarklet que vous avez installé.</li>
+      <li>Attendez quelques secondes : un message indique le nombre de filtres ajoutés, puis la page se recharge.</li>
+    </ol>
+    <img src="regles-prefixe-demarchages.png" alt="Exemple des règles de filtrage des préfixes de démarchage dans l'espace abonné Free Mobile">
+  </section>
 
-  <img src="https://jystervinou.github.io/free-mobile-filtres-demarchage/regles-prefixe-demarchages.png" alt="Exemple des préfixes de démarchage" style="max-width: 100%;">
-  
-  <script>
-        const bookmarkletCode = document.querySelector('a.large-link').getAttribute('href');
+  <section>
+    <h2>Alternative : l'application Saracroche</h2>
+    <p>Si vous n'êtes pas chez Free, ou pour aller plus loin, l'application gratuite et open source <a href="https://saracroche.org/">Saracroche</a> bloque directement sur le téléphone les appels de démarchage, à partir des préfixes officiels et d'une liste de numéros signalés. Elle fonctionne quel que soit l'opérateur :</p>
+    <ul>
+      <li><a href="https://apps.apple.com/app/id6743679292">Saracroche sur l'App Store (iPhone)</a></li>
+      <li><a href="https://play.google.com/store/apps/details?id=com.cbouvat.android.saracroche">Saracroche sur Google Play (Android)</a></li>
+    </ul>
+  </section>
 
-        document.getElementById("copyButton").addEventListener("click", function() {
-            const textArea = document.createElement("textarea");
-            textArea.value = bookmarkletCode;
-            document.body.appendChild(textArea);
-            textArea.select();
-            document.execCommand("copy");
-            document.body.removeChild(textArea);
-            alert("Code du bookmarklet copié dans le presse-papier !");
-        });
-    </script>
-  
+  <p class="disclaimer"><strong>Remarque importante :</strong> ce bookmarklet est fourni « en l'état », sans aucune garantie. L'auteur n'est en rien responsable de l'utilisation qui en est faite. Utilisez-le à votre propre discrétion.</p>
+
+  <footer>
+    <a href="https://x.com/jy">Me contacter sur X</a> · <a href="https://github.com/jystervinou/free-mobile-filtres-demarchage">Code source sur GitHub</a>
+  </footer>
+</main>
+
+<script>
+  const bookmarkletCode = document.querySelector('a.large-link').getAttribute('href');
+  const status = document.getElementById("copyStatus");
+
+  function fallbackCopy(text) {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    document.body.appendChild(textArea);
+    textArea.select();
+    document.execCommand("copy");
+    document.body.removeChild(textArea);
+  }
+
+  document.getElementById("copyButton").addEventListener("click", async function() {
+    try {
+      await navigator.clipboard.writeText(bookmarkletCode);
+    } catch (e) {
+      fallbackCopy(bookmarkletCode);
+    }
+    status.textContent = "Copié !";
+    setTimeout(() => { status.textContent = ""; }, 2500);
+  });
+</script>
 </body>
 </html>
