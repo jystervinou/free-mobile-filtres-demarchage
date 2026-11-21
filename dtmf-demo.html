@@ -15,8 +15,11 @@
 <body>
   <h1>Générateur DTMF</h1>
   <p>Joue les codes <code>*351*préfixe#</code> pour chaque préfixe de démarchage.</p>
+  <p>Si la liste noire n'est pas encore activée sur votre ligne, jouez d'abord le code d'activation.</p>
+  <button id="activateButton">Activer le service (*351#)</button>
   <button id="playAllButton">Jouer tous les codes</button>
   <button id="playNextButton">Jouer le code suivant</button>
+  <button id="stopButton">Stop</button>
   <button id="resetButton">Recommencer</button>
   <p id="current"></p>
   <div id="sequenceDisplay"></div>
@@ -46,6 +49,16 @@
     let audioContext = null;
     let nextIndex = 0;
     let playing = false;
+    let wakeUp = null; // réveille l'attente en cours quand on appuie sur Stop
+
+    class Stopped extends Error {}
+
+    function sleep(ms) {
+      return new Promise((resolve, reject) => {
+        const timer = setTimeout(() => { wakeUp = null; resolve(); }, ms);
+        wakeUp = () => { clearTimeout(timer); wakeUp = null; reject(new Stopped()); };
+      });
+    }
 
     function getAudioContext() {
       if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -79,7 +92,7 @@
         scheduleTone(ctx, dtmfFrequencies[char], t);
         t += toneDuration + pauseBetweenTones;
       }
-      await new Promise(resolve => setTimeout(resolve, (t - ctx.currentTime) * 1000));
+      await sleep((t - ctx.currentTime) * 1000);
     }
 
     async function playCode(index) {
@@ -91,8 +104,10 @@
 
     function updateButtons() {
       const done = nextIndex >= prefixes.length;
+      document.getElementById('activateButton').disabled = playing;
       document.getElementById('playAllButton').disabled = playing || done;
       document.getElementById('playNextButton').disabled = playing || done;
+      document.getElementById('stopButton').disabled = !playing;
       document.getElementById('resetButton').disabled = playing;
       if (done && !playing) current.textContent = 'Terminé.';
     }
@@ -101,17 +116,40 @@
       if (playing) return;
       playing = true;
       updateButtons();
-      try { await task(); } finally { playing = false; updateButtons(); }
+      try {
+        await task();
+      } catch (e) {
+        if (!(e instanceof Stopped)) throw e;
+        current.textContent = 'Arrêté.';
+      } finally {
+        playing = false;
+        updateButtons();
+      }
     }
 
+    document.getElementById('stopButton').addEventListener('click', () => {
+      // Fermer le contexte coupe immédiatement les sons déjà programmés.
+      if (audioContext) { audioContext.close(); audioContext = null; }
+      if (wakeUp) wakeUp();
+    });
+
+    document.getElementById('activateButton').addEventListener('click', () => run(async () => {
+      current.textContent = 'Activation : *351#';
+      await playSequence('*351#');
+      display.textContent += '*351#\n';
+      current.textContent = '';
+    }));
+
     document.getElementById('playNextButton').addEventListener('click', () => run(async () => {
-      await playCode(nextIndex++);
+      await playCode(nextIndex);
+      nextIndex++;
     }));
 
     document.getElementById('playAllButton').addEventListener('click', () => run(async () => {
       while (nextIndex < prefixes.length) {
-        await playCode(nextIndex++);
-        if (nextIndex < prefixes.length) await new Promise(r => setTimeout(r, pauseBetweenCodes * 1000));
+        await playCode(nextIndex);
+        nextIndex++;
+        if (nextIndex < prefixes.length) await sleep(pauseBetweenCodes * 1000);
       }
     }));
 
