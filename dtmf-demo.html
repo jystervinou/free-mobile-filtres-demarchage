@@ -5,24 +5,72 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Générateur DTMF</title>
   <style>
-    body { font: 16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; max-width: 640px; margin: 40px auto; padding: 0 16px; }
-    button { font: inherit; padding: 8px 14px; margin: 0 8px 8px 0; cursor: pointer; }
-    button:disabled { cursor: default; opacity: 0.5; }
-    #sequenceDisplay { white-space: pre-line; font-family: ui-monospace, Menlo, monospace; }
-    #current { font-weight: bold; }
+    :root {
+      --bg: #f6f6f4; --card: #ffffff; --text: #1d1d1f; --muted: #5f6368;
+      --border: #e3e3df; --accent: #cd1e25; --chip: #f1f1ee; --link: #b3141b;
+      --done: #2e7d32; --done-bg: #e6f2e7;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #161618; --card: #1f1f22; --text: #ececec; --muted: #a1a1a6;
+        --border: #333338; --chip: #2a2a2e; --link: #ff6b70;
+        --done: #81c784; --done-bg: #1f3322;
+      }
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    main { max-width: 760px; margin: 0 auto; padding: 40px 16px 64px; }
+    h1 { font-size: clamp(1.6rem, 4vw, 2.2rem); line-height: 1.2; margin: 0 0 12px; }
+    h2 { font-size: 1.15rem; margin: 0 0 12px; }
+    a { color: var(--link); }
+    code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--chip); padding: 1px 6px; border-radius: 6px; }
+    .lead { color: var(--muted); font-size: 1.05rem; margin: 0 0 28px; }
+    section { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 24px; margin-bottom: 20px; }
+    .controls { display: flex; flex-wrap: wrap; gap: 8px; }
+    button { font: inherit; font-size: 0.95rem; padding: 9px 16px; border-radius: 10px; border: 1px solid var(--border); background: var(--chip); color: var(--text); cursor: pointer; }
+    button:hover:not(:disabled) { border-color: var(--muted); }
+    button:disabled { cursor: default; opacity: 0.45; }
+    button.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+    #current { min-height: 1.6em; margin: 16px 0 0; font-weight: 600; }
+    .codes { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+    .codes li { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 0.95rem; background: var(--chip); border: 1px solid transparent; border-radius: 999px; padding: 2px 12px; transition: background .2s, border-color .2s; }
+    .codes li.playing { border-color: var(--accent); color: var(--accent); font-weight: 700; }
+    .codes li.done { background: var(--done-bg); color: var(--done); }
+    .codes li.done::before { content: "✓ "; }
+    .note { color: var(--muted); font-size: 0.95rem; }
+    .note ul { padding-left: 1.2em; margin: 8px 0 0; }
+    footer { text-align: center; color: var(--muted); font-size: 0.95rem; }
   </style>
 </head>
 <body>
+<main>
   <h1>Générateur DTMF</h1>
-  <p>Joue les codes <code>*351*préfixe#</code> pour chaque préfixe de démarchage.</p>
-  <p>Si la liste noire n'est pas encore activée sur votre ligne, jouez d'abord le code d'activation.</p>
-  <button id="activateButton">Activer le service (*351#)</button>
-  <button id="playAllButton">Jouer tous les codes</button>
-  <button id="playNextButton">Jouer le code suivant</button>
-  <button id="stopButton">Stop</button>
-  <button id="resetButton">Recommencer</button>
-  <p id="current"></p>
-  <div id="sequenceDisplay"></div>
+  <p class="lead">Joue au haut-parleur les codes <code>*351*préfixe#</code> qui ajoutent chaque préfixe de démarchage à la liste noire d'une ligne fixe Freebox.</p>
+
+  <section>
+    <div class="controls">
+      <button id="activateButton">Activer le service (*351#)</button>
+      <button id="playAllButton" class="primary">Jouer tous les codes</button>
+      <button id="playNextButton">Code suivant</button>
+      <button id="stopButton">Stop</button>
+      <button id="resetButton">Recommencer</button>
+    </div>
+    <p id="current" role="status"></p>
+    <ul class="codes" id="codes"></ul>
+  </section>
+
+  <section class="note">
+    <h2>Mode d'emploi</h2>
+    <ul>
+      <li>Décrochez un téléphone et approchez son micro du haut-parleur de l'ordinateur.</li>
+      <li>Si la liste noire n'est pas activée sur votre ligne, jouez d'abord <code>*351#</code>.</li>
+      <li>Utilisez un téléphone filaire branché sur la Freebox : les combinés sans fil (DECT) transmettent les touches en numérique et ignorent les tonalités captées par le micro.</li>
+      <li>Codes officiels : <a href="https://assistance.free.fr/articles/telephone-fixe-filtrer-les-appels-entrants-548">assistance Free</a>.</li>
+    </ul>
+  </section>
+
+  <footer><a href="./">Retour au bookmarklet Free Mobile</a></footer>
+</main>
 
   <script>
     const dtmfFrequencies = {
@@ -43,9 +91,13 @@
     const toneGain = 0.35;             // par fréquence : la somme reste < 1, sans écrêtage
     const ramp = 0.005;                // montée/descente pour éviter les clics
 
-    const display = document.getElementById('sequenceDisplay');
     const current = document.getElementById('current');
-    const buttons = document.querySelectorAll('button');
+    const chips = prefixes.map(prefix => {
+      const li = document.createElement('li');
+      li.textContent = `*351*${prefix}#`;
+      document.getElementById('codes').appendChild(li);
+      return li;
+    });
     let audioContext = null;
     let nextIndex = 0;
     let playing = false;
@@ -98,8 +150,13 @@
     async function playCode(index) {
       const code = `*351*${prefixes[index]}#`;
       current.textContent = `Code ${index + 1}/${prefixes.length} : ${code}`;
-      await playSequence(code);
-      display.textContent += code + '\n';
+      chips[index].classList.add('playing');
+      try {
+        await playSequence(code);
+        chips[index].classList.add('done');
+      } finally {
+        chips[index].classList.remove('playing');
+      }
     }
 
     function updateButtons() {
@@ -136,8 +193,7 @@
     document.getElementById('activateButton').addEventListener('click', () => run(async () => {
       current.textContent = 'Activation : *351#';
       await playSequence('*351#');
-      display.textContent += '*351#\n';
-      current.textContent = '';
+      current.textContent = 'Code d\'activation joué.';
     }));
 
     document.getElementById('playNextButton').addEventListener('click', () => run(async () => {
@@ -155,7 +211,7 @@
 
     document.getElementById('resetButton').addEventListener('click', () => {
       nextIndex = 0;
-      display.textContent = '';
+      chips.forEach(li => li.classList.remove('done'));
       current.textContent = '';
       updateButtons();
     });
